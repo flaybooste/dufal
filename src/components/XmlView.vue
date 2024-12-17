@@ -30,22 +30,20 @@
               <strong>Emitente:</strong> {{ nf.emitente.xNome }}<br>
               <strong>Destinatário:</strong> {{ nf.destinatario.xNome }}<br>
               <strong>UF: </strong> {{ nf.emitente.enderEmit.UF }}
-              <ul v-for="item in nf.produtos">
+              <ul v-for="item in nf.produtos" :key="item.prod.NCM">
                 <span v-if="!validarNCM(item.prod.NCM)">
                   <strong>Produto: </strong><br>
-
                   {{ item.prod.xProd }} - R${{ item.prod.vProd }}<br>
                   <strong>NCM:</strong> {{ item.prod.NCM }} <button
-                    v-on:click="this.ncmPermitidos.push(item.prod.NCM)">Remover produto</button>
+                    v-on:click="removerProduto(item.prod.NCM)">Remover produto</button>
                   <strong> (NCM inválido para a atividade)</strong>
                   <br>
                   <strong v-if="Object.values(item.imposto.ICMS)[0].orig != '1'">DIFAL: {{
                     calculobaseDupla_Int(item.prod.vProd)[0] }} FCP: {{
-                      calculobaseDupla_Int(item.prod.vProd)[1] }}</strong>
+                    calculobaseDupla_Int(item.prod.vProd)[1] }}</strong>
                   <strong v-else>DIFAL: {{ calculobaseDupla_Int(item.prod.vProd, 0.04)[0] }} FCP: {{
                     calculobaseDupla_Int(item.prod.vProd)[1] }} </strong>
                 </span>
-
               </ul><br>
               <strong>Total NF:</strong> {{ nf.totais.vNF }}
             </li>
@@ -62,8 +60,6 @@
 
 <script>
 import { parseString } from "xml2js";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase-config";
 import * as XLSX from "xlsx";
 
 export default {
@@ -101,113 +97,100 @@ export default {
           const emitente = infNFe.emit;
           const destinatario = infNFe.dest;
           const totais = infNFe.total.ICMSTot;
-          const produtos = Array.isArray(infNFe.det)
-            ? infNFe.det.map((det) => det)
-            : [infNFe.det];
-            //firebase inserir dados de empresas
-          const addData = async () => {
-            try {
-              await addDoc(collection(db, "empresas"), {
-                cnpj: nome.value,
-                idade: parseInt(idade.value),
-              });
-              console.log("Dados salvos!");
-            } catch (error) {
-              console.error("Erro ao salvar dados:", error.message);
-            }
+          const produtos = Array.isArray(infNFe.det) ? infNFe.det : [infNFe.det];
+
+          const nfData = {
+            emitente,
+            destinatario,
+            totais,
+            produtos,
           };
 
-          return { nome, idade, addData };
-        },
-        const nfData = {
-          emitente,
-          destinatario,
-          totais,
-          produtos,
-        };
+          // Agrupar por UF
+          if (!this.agrupadosPorUF[ufDest]) {
+            this.agrupadosPorUF[ufDest] = [];
+          }
+          this.agrupadosPorUF[ufDest].push(nfData);
 
-        // Agrupar por UF
-        if (!this.agrupadosPorUF[ufDest]) {
-          this.agrupadosPorUF[ufDest] = [];
-        }
-        this.agrupadosPorUF[ufDest].push(nfData);
+          // Adicionar emitente à lista
+          if (!this.emitentesDisponiveis[emitente.xNome]) {
+            this.emitentesDisponiveis[emitente.xNome] = true;
+          }
 
-        // Adicionar emitente à lista
-        if (!this.emitentesDisponiveis[emitente.xNome]) {
-          this.emitentesDisponiveis[emitente.xNome] = true;
+        } catch (error) {
+          console.error("Erro ao extrair informações do XML:", error);
         }
-      } catch (error) {
-        console.error("Erro ao extrair informações do XML:", error);
+      });
+    },
+    filtrarPorUF() {
+      const dadosPorUF = this.ufSelecionada
+        ? this.agrupadosPorUF[this.ufSelecionada] || []
+        : Object.values(this.agrupadosPorUF).flat();
+
+      this.dadosFiltrados = this.emitenteSelecionado
+        ? dadosPorUF.filter((nf) => nf.emitente.xNome === this.emitenteSelecionado)
+        : dadosPorUF;
+    },
+    filtrarPorEmitente() {
+      this.filtrarPorUF();
+    },
+    validarNCM(ncm) {
+      return this.ncmPermitidos.includes(ncm);
+    },
+    removerProduto(ncm) {
+      this.ncmPermitidos = this.ncmPermitidos.filter(item => item !== ncm);
+    },
+    calculobaseDupla_Int(valor_prod, aliq = 0.12) {
+      try {
+        let icms_nota = valor_prod * aliq;
+        let base = valor_prod - icms_nota;
+        let base_cal = base / (1 - 0.20);
+        let icms_int = base_cal * 0.20;
+        var difal = icms_int - icms_nota;
+        var difal_fcp = base_cal * 0.02;
+        return [difal.toFixed(2), difal_fcp.toFixed(2)];
+      } catch(e) {
+        console.log(e);
       }
-    });
-  },
-  filtrarPorUF() {
-    const dadosPorUF = this.ufSelecionada
-      ? this.agrupadosPorUF[this.ufSelecionada] || []
-      : Object.values(this.agrupadosPorUF).flat();
-
-    this.dadosFiltrados = this.emitenteSelecionado
-      ? dadosPorUF.filter((nf) => nf.emitente.xNome === this.emitenteSelecionado)
-      : dadosPorUF;
-  },
-  filtrarPorEmitente() {
-    this.filtrarPorUF();
-  },
-  validarNCM(ncm) {
-    return this.ncmPermitidos.includes(ncm);
-  },
-  calculobaseDupla_Int(valor_prod, aliq = 0.12) {
-    try {
-      let icms_nota = valor_prod * aliq; 4.72
-      let base = valor_prod - icms_nota;
-      let base_cal = base / (1 - 0.20);
-      let icms_int = base_cal * 0.20;
-      var difal = icms_int - icms_nota;
-      var difal_fcp = base_cal * 0.02;
-      return [difal.toFixed(2), difal_fcp.toFixed(2)]
-    } catch (e) {
-      console.log(e);
-    }
-  },
-  exportarParaExcel() {
-    const wsData = this.dadosFiltrados
-      .filter(nf => nf.emitente.enderEmit.UF != "RJ") // Filtrar notas válidas
-      .map((nf) => ({
-        Emitente: nf.emitente.xNome,
-        UFEmitente: nf.emitente.enderEmit.UF,
-        Destinatário: nf.destinatario.xNome,
-        Total: nf.totais.vNF,
-        Produtos: nf.produtos
-          .map((prod) => {
-            var DIFAL = [];
-            if (!this.validarNCM(prod.prod.NCM)) {
-
-              if (Object.values(prod.imposto.ICMS)[0].orig != '1') {
-                DIFAL.push(this.calculobaseDupla_Int(prod.prod.vProd))
-              } else {
-                DIFAL.push(this.calculobaseDupla_Int(prod.prod.vProd, 0.04))
+    },
+    exportarParaExcel() {
+      const wsData = this.dadosFiltrados
+        .filter(nf => nf.emitente.enderEmit.UF != "RJ") // Filtrar notas válidas
+        .map((nf) => ({
+          Emitente: nf.emitente.xNome,
+          UFEmitente: nf.emitente.enderEmit.UF,
+          Destinatário: nf.destinatario.xNome,
+          Total: nf.totais.vNF,
+          Produtos: nf.produtos
+            .map((prod) => {
+              var DIFAL = [];
+              if (!this.validarNCM(prod.prod.NCM)) {
+                if (Object.values(prod.imposto.ICMS)[0].orig != '1') {
+                  DIFAL.push(this.calculobaseDupla_Int(prod.prod.vProd))
+                } else {
+                  DIFAL.push(this.calculobaseDupla_Int(prod.prod.vProd, 0.04))
+                }
+                return `${prod.prod.xProd} (NCM: ${prod.prod.NCM}) (Valor: R$ ${prod.prod.vProd}) (Difal: R$ ${DIFAL[0][0]}) (Difal FCP: R$ ${DIFAL[0][1]})`
               }
-              return `${prod.prod.xProd} (NCM: ${prod.prod.NCM}) (Valor: R$ ${prod.prod.vProd}) (Difal: R$ ${DIFAL[0][0]}) (Difal FCP: R$ ${DIFAL[0][1]})`
+            })
+            .join(", "),
+        }));
 
-            }
-          })
-          .join(", "),
-      }));
+      if (wsData.length === 0) {
+        alert("Nenhum dado para exportar!");
+        return;
+      }
 
-    if (wsData.length === 0) {
-      alert("Nenhum dado para exportar!");
-      return;
-    }
+      const ws = XLSX.utils.json_to_sheet(wsData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Notas Fiscais");
 
-    const ws = XLSX.utils.json_to_sheet(wsData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Notas Fiscais");
-
-    XLSX.writeFile(wb, "notas_fiscais.xlsx");
+      XLSX.writeFile(wb, "notas_fiscais.xlsx");
+    },
   },
-},
 };
 </script>
+
 
 <style scoped>
 button {
