@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import SiegView from './components/SiegView.vue'
+import SiegView from './views/SiegView.vue'
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import SiegView from '@/components/SiegView.vue'
-import XmlView from '@/components/XmlView.vue'
+import SiegView from '@/views/SiegView.vue'
+import XmlView from '@/views/XmlView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
