@@ -11,8 +11,18 @@
   </template>
   
   <script>
-  import axios from "axios";
   
+  import axios from "axios";
+  import iconv from "iconv-lite";
+  function convertCp850ToUtf8(cp850String) {
+  // A string original CP850 precisa ser transformada em um buffer
+  const cp850Buffer = Buffer.from(cp850String, "binary");
+
+  // Converter CP850 para UTF-8
+  const utf8String = iconv.decode(cp850Buffer, "cp850");
+  return utf8String;
+}
+
   export default {
     data() {
       return {
@@ -28,12 +38,12 @@
         this.error = null;
   
         // URL do endpoint
-        const url = "https://api.sieg.com/BaixarXmls";
+        const url = "/api/BaixarXmls";
   
         // Dados a serem enviados
         const payload = {
           "XmlType": 1, // Tipo de XML (NFe, neste caso)
-          "Take": 10, // Quantidade de XMLs por requisição
+          "Take": 5, // Quantidade de XMLs por requisição
           "Skip": 0, // Pular registros (começar do início)
           "DataEmissaoInicio": "2024-11-01T00:00:00Z", // Data inicial
           "DataEmissaoFim": "2024-11-30T23:59:59Z", // Data final
@@ -48,7 +58,7 @@
               "Content-Type": "application/json", // Cabeçalho necessário
             },
           });
-  
+          console.log(base64ToUtf8UsingTextDecoder(result.data))
           // Atualiza o resultado na interface
           this.response = JSON.stringify(result.data, null, 2);
         } catch (err) {

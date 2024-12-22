@@ -3,6 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import path from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,12 +11,23 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://api.sieg.com', // URL da API
+        rewrite: (path) => path.replace( "/api", '' ),
+
+        changeOrigin: true, // Permite redirecionar para outro domínio
+        ws: true,
+      },
+    },
+  },
   devServer: {
     proxy: {
       '/api': {
         target: 'https://api.sieg.com', // URL da API
         changeOrigin: true, // Permite redirecionar para outro domínio
-        pathRewrite: { '^/api': '' }, // Remove o prefixo `/api`
+        rewrite: (path) => path.replace( "/^\api", '' ),
       },
     },
   },
