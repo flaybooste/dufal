@@ -4,7 +4,7 @@
       buttonLabel="Abrir Pasta com XML"
       @folder-selected="processarArquivos"
     />
-
+    <Filters :emitentesDisponiveis="emitentes"></Filters>
     <InvoiceList :dados="dadosFiltrados" @remover-produto="removerProduto" />
   </div>
 </template>
@@ -13,12 +13,15 @@
 import { useNotasStore } from "@/stores/useNotasStore";
 import { computed } from "vue";
 import FolderSelectComponent from "@/components/FolderSelectComponent.vue";
+import Filters from "@/components/Filters.vue";
+
 import InvoiceList from "@/components/InvoiceList.vue";
 
 export default {
   components: {
     FolderSelectComponent,
     InvoiceList,
+    Filters,
   },
   setup() {
     const notasStore = useNotasStore();
@@ -33,9 +36,10 @@ export default {
 
     // Computed para atualizar automaticamente a lista de notas fiscais filtradas
     const dadosFiltrados = computed(() => notasStore.dadosFiltrados);
-
+    const emitentes = computed(() => notasStore.emitentes);
     return {
       dadosFiltrados,
+      emitentes,
       processarArquivos,
       removerProduto,
     };

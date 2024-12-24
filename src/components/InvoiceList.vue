@@ -5,7 +5,7 @@
       <div v-for="(nf, i) in dados" :key="i" class="nota-fiscal">
         <ul>
           <li>
-            <strong>Emitente:</strong> {{ nf.emitente?.xNome || "Não informado" }}<br />
+            <strong>Emitente:</strong> {{ nf.emitente || "Não informado" }}<br />
             <strong>Destinatário:</strong> {{ nf.destinatario?.xNome || "Não informado"
             }}<br />
             <strong>UF:</strong> {{ nf.emitente?.enderEmit?.UF || "Não informado" }}

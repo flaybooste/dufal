@@ -40,13 +40,12 @@ export const useNotasStore = defineStore('notas', {
         try {
           const infNFe = result.nfeProc.NFe.infNFe;
           const uf = infNFe.emit.enderEmit.UF;
-          const emitente = infNFe.emit;
+          const emitente = infNFe.emit.xNome;
           const destinatario = infNFe.dest;
           const totais = infNFe.total.ICMSTot;
           const produtos = Array.isArray(infNFe.det) ? infNFe.det : [infNFe.det];
 
           const notaFiscal = { uf, emitente, destinatario, totais, produtos };
-
           this.dadosPorUF = [...this.dadosPorUF, notaFiscal];
 
           if (!this.emitentes.includes(emitente)) {
