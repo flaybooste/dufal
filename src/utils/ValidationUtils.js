@@ -4,7 +4,7 @@ export function validarNCM(ncm) {
   }
   
   export function validarCFOP(cfop) {
-    const cfopPermitidos = ["1933", "1102", "2201"];
+    const cfopPermitidos = ["6108", "6102"];
     return cfopPermitidos.includes(cfop);
   }
   
