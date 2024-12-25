@@ -4,7 +4,7 @@
       buttonLabel="Abrir Pasta com XML"
       @folder-selected="processarArquivos"
     />
-    <Filters :emitentesDisponiveis="emitentes"></Filters>
+    <Filters :emitentesDisponiveis="emitentes" />
     <InvoiceList :dados="dadosFiltrados" @remover-produto="removerProduto" />
   </div>
 </template>
