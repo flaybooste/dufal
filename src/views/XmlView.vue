@@ -14,7 +14,6 @@ import { useNotasStore } from "@/stores/useNotasStore";
 import { computed } from "vue";
 import FolderSelectComponent from "@/components/FolderSelectComponent.vue";
 import Filters from "@/components/Filters.vue";
-
 import InvoiceList from "@/components/InvoiceList.vue";
 
 export default {

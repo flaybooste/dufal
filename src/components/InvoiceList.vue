@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="dados && dados.length" class="p-4">
+    <div v-if="dados" class="p-4">
       <h3 class="text-lg font-bold mb-4">Notas Fiscais:</h3>
       <div
         v-for="(nf, i) in dados"
@@ -36,9 +36,19 @@
                   <strong class="text-red-600"> (NCM inválido para a atividade)</strong>
                   <br />
                   <strong v-if="!isOrigemNacional(item.imposto?.ICMS)"> DIFAL: </strong>
-                  {{ calcularDifal(item.prod?.vProd)[0] }}
+                  {{
+                    calcularDifal(
+                      (cfop = item.prod?.CFOP),
+                      (valorProd = item.prod?.vProd)
+                    )[0]
+                  }}
                   <strong class="ml-2">FCP:</strong>
-                  {{ calcularDifal(item.prod?.vProd)[1] }}
+                  {{
+                    calcularDifal(
+                      (cfop = item.prod?.CFOP),
+                      (valorProd = item.prod?.vProd)
+                    )[1]
+                  }}
                 </span>
               </li>
             </ul>
@@ -58,6 +68,8 @@
 </template>
 
 <script>
+import { useNotasStore } from "@/stores/useNotasStore";
+
 export default {
   props: {
     dados: {
@@ -65,10 +77,17 @@ export default {
       required: true, // Adicione required para garantir que é passada corretamente
     },
   },
+  setup() {
+    const notasStore = useNotasStore();
+
+    const calcularDifal = (cfop, valorProd) => {
+      notasStore.calcularDifal((cfop = cfop), (valorProd = valorProd));
+    };
+  },
   watch: {
     dados: {
       handler(newVal) {
-        console.log("Dados atualizados:", newVal); // Depuração para garantir que está recebendo os novos valores
+        //console.log("Dados atualizados:", newVal); // Depuração para garantir que está recebendo os novos valores
       },
       immediate: true, // Executa o watcher logo na inicialização
     },
@@ -77,20 +96,6 @@ export default {
     removerProduto(ncm) {
       // Emitir evento para remover o NCM
       this.$emit("remover-produto", ncm);
-    },
-    calcularDifal(valorProd, aliq = 0.12) {
-      try {
-        const icmsNota = valorProd * aliq;
-        const base = valorProd - icmsNota;
-        const baseCal = base / (1 - 0.2);
-        const icmsInt = baseCal * 0.2;
-        const difal = icmsInt - icmsNota;
-        const fcp = baseCal * 0.02;
-        return [difal.toFixed(2), fcp.toFixed(2)];
-      } catch (e) {
-        console.error(e);
-        return [0, 0];
-      }
     },
     isOrigemNacional(icms) {
       // Verifica se a origem do ICMS é nacional
