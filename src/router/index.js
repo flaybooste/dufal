@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import XmlView from '@/views/XmlView.vue'
 import HomeView from '@/views/HomeView.vue'
+import PlanilhasComponent from '@/components/PlanilhasComponent.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +15,11 @@ const router = createRouter({
     path: "/xml",
     name: "xml",
     component: XmlView,
+  },
+  {
+    path: "/planilhas",
+    name: "planilhas",
+    component: PlanilhasComponent
   }
   ],
 })

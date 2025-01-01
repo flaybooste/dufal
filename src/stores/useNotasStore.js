@@ -14,7 +14,6 @@ export const useNotasStore = defineStore('notas', {
     },
     dadosFiltrados(state) {
       const { uf, emitente } = state.filtros;
-      console.log(state.dadosPorUF)
       return state.dadosPorUF.filter(
         nf => (uf ? nf.uf === uf : true) && (emitente ? nf.emitente === emitente : true)
       );
@@ -45,7 +44,7 @@ export const useNotasStore = defineStore('notas', {
           const destinatario = infNFe.dest;
           const totais = infNFe.total.ICMSTot;
           const produtos = Array.isArray(infNFe.det) ? infNFe.det : [infNFe.det];
-          
+
           const notaFiscal = { uf, emitente, destinatario, totais, produtos };
           this.dadosPorUF = [...this.dadosPorUF, notaFiscal];
 
@@ -63,6 +62,5 @@ export const useNotasStore = defineStore('notas', {
     removerProduto(ncm) {
       this.ncmPermitidos = this.ncmPermitidos.filter(item => item !== ncm);
     },
-    
-  },
+  }
 });
