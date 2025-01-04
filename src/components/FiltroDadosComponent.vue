@@ -11,7 +11,7 @@
                 type="text"
                 v-model="filtros[coluna]"
                 @input="aplicarFiltro"
-                placeholder="Filtrar..."
+                :placeholder="`Filtrar ${coluna}...`"
               />
             </div>
           </th>
@@ -23,6 +23,9 @@
         </tr>
       </tbody>
     </table>
+    <div v-if="!dadosFiltrados.length" class="sem-resultados">
+      <p>Nenhum resultado encontrado para os filtros aplicados.</p>
+    </div>
   </div>
 </template>
 
@@ -49,10 +52,11 @@ export default {
   },
   computed: {
     dadosFiltrados() {
+      // Retorna os dados filtrados com base nos filtros aplicados
       return this.dados.filter((linha) => {
         return Object.keys(this.filtros).every((coluna) => {
-          const filtro = this.filtros[coluna]?.toLowerCase() || "";
-          const valor = linha[coluna]?.toString().toLowerCase() || "";
+          const filtro = (this.filtros[coluna] || "").toLowerCase();
+          const valor = (linha[coluna] || "").toString().toLowerCase();
           return valor.includes(filtro);
         });
       });
@@ -71,28 +75,39 @@ export default {
   max-width: 100%;
   overflow-x: auto;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
 }
+
 th,
 td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
 }
+
 th {
   background-color: #f4f4f4;
 }
+
 .header-cell {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
+
 .header-cell input {
   margin-top: 5px;
   padding: 5px;
   width: 100%;
   box-sizing: border-box;
+}
+
+.sem-resultados {
+  margin-top: 10px;
+  text-align: center;
+  color: #888;
 }
 </style>
