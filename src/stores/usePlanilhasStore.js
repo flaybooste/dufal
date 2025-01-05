@@ -1,6 +1,3 @@
-import { defineStore } from 'pinia';
-import * as XLSX from 'xlsx';
-
 export const usePlanilhaStore = defineStore('planilha', {
   state: () => ({
     colunas: [],
@@ -40,6 +37,27 @@ export const usePlanilhaStore = defineStore('planilha', {
     limparDados() {
       this.colunas = [];
       this.dados = [];
+    },
+    verificarUFEmit() {
+      if (this.dados.length === 0) {
+        console.warn('Nenhum dado carregado para verificar o UF_Emit.');
+        return;
+      }
+
+      // Filtrar os dados para verificar se o campo UF_Emit existe
+      const ufEmitPorEstado = this.dados.reduce((acc, registro) => {
+        const ufEmit = registro['UF_Emit'];
+        if (ufEmit) {
+          if (!acc[ufEmit]) {
+            acc[ufEmit] = [];
+          }
+          acc[ufEmit].push(registro);
+        }
+        return acc;
+      }, {});
+
+      console.log('UF_Emit agrupado por estado:', ufEmitPorEstado);
+      return ufEmitPorEstado;
     },
   },
 });
