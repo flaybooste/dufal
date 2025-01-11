@@ -1,3 +1,6 @@
+import { defineStore } from 'pinia';
+import * as XLSX from 'xlsx';
+
 export const usePlanilhaStore = defineStore('planilha', {
   state: () => ({
     colunas: [],
