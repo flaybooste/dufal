@@ -54,9 +54,11 @@ export default {
     },
 
     handleFileSelection(event) {
+      const notasStore = useNotasStore();
+
       const files = Array.from(event.target.files);
 
-      var data = processarXML(event.target.files);
+      var data = notasStore.processarXML(event.target.files);
 
       console.log(data);
 

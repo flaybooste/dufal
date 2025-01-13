@@ -1,6 +1,6 @@
 export function calcularDifal(cfop = 6102, valorProd, baseCalc = 0, impICMS = 0, aliq = 0.12) {
-    if( baseCal == 0 && baseCal == "0"){
-    try {
+    if (baseCal == 0 && baseCal == "0") {
+        try {
             const icmsNota = valorProd * aliq;
             const base = valorProd - icmsNota;
             const baseDupla = base / (1 - 0.2);
@@ -12,7 +12,7 @@ export function calcularDifal(cfop = 6102, valorProd, baseCalc = 0, impICMS = 0,
             console.error(e);
             return [0, 0];
         }
-    }else {
+    } else {
         try {
             var base = baseCalc - icmsNota;
             var baseDupla = base / (1 - 0.2);
@@ -26,16 +26,26 @@ export function calcularDifal(cfop = 6102, valorProd, baseCalc = 0, impICMS = 0,
         }
     }
 }
-function calcularDifalMono(cfop = 6102, valorProd, baseCalc = 0, impICMS = 0, aliq = 0.12){
+// integrar pra toda vez que tiver um produto que esteja na lista de monofasico diminuir a base de calculo
+function calcularDifalMono(cfop = 6102, valorProd, baseCalc = 0, impICMS = 0, aliq = 0.12) {
     let bc = baseCalc;
     let red = bc * 0.1049;
     bc = bc - red;
 
 }
 
-function calcularDifalConv5291(cfop = 6102, valorProd, baseCalc = 0, impICMS = 0, aliq = 0.12){
-    let bc = baseCalc;
-    let bc_red = (100 * 8.80) / 100;
-    bc = (bc * bc_red) * 0.20;
-    return bc
+
+// toda vez que tiver um equipamento do conv 52/91 diminui a base de calculo
+let ncm_conv = [
+    "84137010", "84137080", "84137090", "84148012", "84148013", "84148019",
+    "84148031", "84148033", "84148038", "84148039",
+    "84161000", "84162010", "84162090", "84163000", "84169000",
+]
+
+var calcularDifalConv5291 = function(valor_prod=10, ncm="84137080") {
+    ncm_conv.filter((cod) => {
+        (ncm == cod) && console.log(ncm +"/"+ valor_prod)
+
+
+    })
 }

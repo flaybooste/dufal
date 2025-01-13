@@ -6,6 +6,7 @@
           <th v-for="(coluna, index) in colunas" :key="index">
             <div class="header-cell">
               <span>{{ coluna }}</span>
+              <!-- Campo de filtro dinâmico -->
               <input
                 v-if="habilitarFiltros"
                 type="text"
@@ -19,10 +20,14 @@
       </thead>
       <tbody>
         <tr v-for="(linha, index) in dadosFiltrados" :key="index">
-          <td v-for="coluna in colunas" :key="coluna">{{ linha[coluna] }}</td>
+          <!-- Renderiza as células dinamicamente com base nas colunas -->
+          <td v-for="coluna in colunas" :key="coluna">
+            {{ linha[coluna] || "-" }}
+          </td>
         </tr>
       </tbody>
     </table>
+    <!-- Mensagem caso nenhum resultado seja encontrado -->
     <div v-if="!dadosFiltrados.length" class="sem-resultados">
       <p>Nenhum resultado encontrado para os filtros aplicados.</p>
     </div>
@@ -47,23 +52,24 @@ export default {
   },
   data() {
     return {
-      filtros: {},
+      filtros: {}, // Armazena os filtros aplicados
     };
   },
   computed: {
     dadosFiltrados() {
-      // Retorna os dados filtrados com base nos filtros aplicados
+      // Computa os dados com base nos filtros
       return this.dados.filter((linha) => {
-        return Object.keys(this.filtros).every((coluna) => {
-          const filtro = (this.filtros[coluna] || "").toLowerCase();
+        return Object.entries(this.filtros).every(([coluna, filtro]) => {
+          if (!filtro) return true; // Ignora filtros vazios
           const valor = (linha[coluna] || "").toString().toLowerCase();
-          return valor.includes(filtro);
+          return valor.includes(filtro.toLowerCase());
         });
       });
     },
   },
   methods: {
     aplicarFiltro() {
+      // Emite evento para o componente pai com os dados filtrados
       this.$emit("filtro-aplicado", this.dadosFiltrados);
     },
   },
@@ -74,22 +80,25 @@ export default {
 .tabela-com-filtros {
   max-width: 100%;
   overflow-x: auto;
+  margin-top: 20px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px;
 }
 
 th,
 td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 10px;
   text-align: left;
 }
 
 th {
-  background-color: #f4f4f4;
+  background-color: #f9f9f9;
+  font-weight: bold;
 }
 
 .header-cell {
@@ -100,14 +109,17 @@ th {
 
 .header-cell input {
   margin-top: 5px;
-  padding: 5px;
+  padding: 6px;
+  font-size: 12px;
   width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   box-sizing: border-box;
 }
 
 .sem-resultados {
-  margin-top: 10px;
+  margin-top: 15px;
   text-align: center;
-  color: #888;
+  color: #999;
 }
 </style>

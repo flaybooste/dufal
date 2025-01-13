@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Tabela com Filtros</h1>
-    <input type="file" @change="handleFileChange" />
+    <input type="file" @change="handleFileChange" accept=".xlsm, .xlsx, .xls" />
     <TabelaComFiltros
       v-if="dados.length"
       :colunas="colunas"
@@ -25,41 +25,44 @@ export default {
   setup() {
     const planilhaStore = usePlanilhaStore();
 
-    // Carrega a planilha inicial (caso necessário)
-    const carregarPlanilhaInicial = async () => {
-      await planilhaStore.carregarPlanilha();
-    };
-
-    carregarPlanilhaInicial();
-
-    // Monitora alterações nos dados da planilha
-    watch(
-      () => planilhaStore.dados,
-      (novosDados) => {
-        if (novosDados && novosDados.length) {
-          console.log("Planilha carregada com sucesso:", novosDados);
-        }
-      },
-      { immediate: true } // Executa no início para capturar os dados já carregados
-    );
+    // Reatividade para colunas e dados
+    const colunas = planilhaStore.colunas;
+    const dados = planilhaStore.dados;
 
     // Função para lidar com a seleção do arquivo
     const handleFileChange = async (event) => {
       const arquivoSelecionado = event.target.files[0];
-      if (arquivoSelecionado) {
-        console.log("Arquivo selecionado:", arquivoSelecionado);
-        await planilhaStore.carregarPlanilha(arquivoSelecionado); // Passa o arquivo para o método
+      if (!arquivoSelecionado) {
+        console.warn("Nenhum arquivo selecionado.");
+        return;
+      }
+
+      try {
+        await planilhaStore.carregarPlanilha(arquivoSelecionado);
+        console.log("Arquivo carregado com sucesso.");
+      } catch (error) {
+        console.error("Erro ao carregar o arquivo:", error);
       }
     };
 
+    // Função para lidar com os filtros aplicados
+    const filtrosAplicados = (dadosFiltrados) => {
+      console.log("Dados filtrados:", dadosFiltrados);
+    };
+
     return {
-      colunas: planilhaStore.colunas,
-      dados: planilhaStore.dados,
-      filtrosAplicados: (dadosFiltrados) => {
-        console.log("Dados filtrados:", dadosFiltrados);
-      },
+      colunas,
+      dados,
       handleFileChange,
+      filtrosAplicados,
     };
   },
 };
 </script>
+
+<style scoped>
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+</style>

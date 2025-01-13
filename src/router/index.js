@@ -11,16 +11,16 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-  {
-    path: "/xml",
-    name: "xml",
-    component: XmlView,
-  },
-  {
-    path: "/planilhas",
-    name: "planilhas",
-    component: PlanilhasComponent
-  }
+    {
+      path: "/xml",
+      name: "xml",
+      component: XmlView,
+    },
+    {
+      path: "/planilhas",
+      name: "planilhas",
+      component: PlanilhasComponent
+    }
   ],
 })
 
