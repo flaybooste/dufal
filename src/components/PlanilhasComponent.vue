@@ -17,19 +17,25 @@
 <script>
 import TabelaComFiltros from "@/components/FiltroDadosComponent.vue";
 import { usePlanilhaStore } from "@/stores/usePlanilhasStore";
-import { watch } from "vue";
+import { ref, watch } from "vue";
 
 export default {
   components: { TabelaComFiltros },
-
   setup() {
-    const planilhaStore = usePlanilhaStore();
+    const planilhaStore = usePlanilhaStore(); // Referência à store
+    const colunas = ref(planilhaStore.colunas); // Reatividade para colunas
+    const dados = ref([]); // Reatividade para os dados processados em tempo real
 
-    // Reatividade para colunas e dados
-    const colunas = planilhaStore.colunas;
-    const dados = planilhaStore.dados;
+    // Monitora as alterações nas linhas processadas
+    watch(
+      () => planilhaStore.dados,
+      (novosDados) => {
+        dados.value = novosDados; // Atualiza os dados dinamicamente
+        console.log("Novas linhas processadas:", novosDados);
+      }
+    );
 
-    // Função para lidar com a seleção do arquivo
+    // Função para lidar com a seleção de arquivos
     const handleFileChange = async (event) => {
       const arquivoSelecionado = event.target.files[0];
       if (!arquivoSelecionado) {
@@ -38,6 +44,7 @@ export default {
       }
 
       try {
+        planilhaStore.limparDados(); // Limpa os dados anteriores na store
         await planilhaStore.carregarPlanilha(arquivoSelecionado);
         console.log("Arquivo carregado com sucesso.");
       } catch (error) {
@@ -45,7 +52,7 @@ export default {
       }
     };
 
-    // Função para lidar com os filtros aplicados
+    // Função para lidar com filtros aplicados
     const filtrosAplicados = (dadosFiltrados) => {
       console.log("Dados filtrados:", dadosFiltrados);
     };

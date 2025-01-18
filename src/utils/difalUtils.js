@@ -49,3 +49,31 @@ var calcularDifalConv5291 = function(valor_prod=10, ncm="84137080") {
 
     })
 }
+
+export const difalConv5291 = (valor_prod = 10, aliq = 0.12, icms_pg = 0) => {
+    icms_pg = valor_prod * aliq;
+    let base = valor_prod - icms_pg;
+    let base_2 = base / (1 - 0.20);
+    let aliq_red = ((100 * 0.088) / aliq) / 100;
+    let base_final = base_2 * aliq_red
+    let difal = (base_final * 0.20) - icms_pg
+    return difal
+}
+
+export const diFal = (valor_prod = 10, aliq = 0.12, icms_pg = 0) => {
+    if (icms_pg === 0) {
+        icms_pg = valor_prod * aliq;
+        let base = valor_prod - icms_pg;
+        let base_2 = base / (1 - 0.20);
+        let base_final = base_2 * aliq_red
+        let difal = (base_final * 0.20) - icms_pg
+        return difal
+    }else if(icms_pg > 0){
+        let base = valor_prod - icms_pg;
+        let base_2 = base / (1 - 0.20);
+        let base_final = base_2 * aliq_red
+        let difal = (base_final * 0.20) - icms_pg
+        return difal
+    }
+
+}

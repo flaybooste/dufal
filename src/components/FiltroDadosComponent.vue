@@ -52,6 +52,7 @@ export default {
   },
   data() {
     return {
+      linhasProcessadas: [], // Armazena as linhas processadas
       filtros: {}, // Armazena os filtros aplicados
     };
   },

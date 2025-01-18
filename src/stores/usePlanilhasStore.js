@@ -1,11 +1,16 @@
 import { defineStore } from "pinia";
 import * as XLSX from "xlsx";
+import { diFal } from "@/utils/difalUtils";
 
 export const usePlanilhaStore = defineStore("planilha", {
   state: () => ({
     colunas: [],
     dados: [],
+    linhasDiferentesRJ: [], // Lista de linhas com UF_Emit !== "RJ"
   }),
+  getters:{
+
+  },
   actions: {
     async carregarPlanilha(arquivo) {
       if (!arquivo) throw new Error("Arquivo não encontrado");
@@ -19,16 +24,42 @@ export const usePlanilhaStore = defineStore("planilha", {
         const planilha = workbook.Sheets[primeiraPlanilha];
         const dadosJSON = XLSX.utils.sheet_to_json(planilha, { header: 1 });
 
+        // A primeira linha contém os nomes das colunas
         this.colunas = dadosJSON[0];
-        this.dados = dadosJSON.slice(1).map((linha) =>
-          linha.reduce((acc, valor, index) => {
-            acc[this.colunas[index]] = valor;
+
+        // Processar as linhas em tempo real
+        const processarLinha = async (linha, index) => {
+          const dadosLinha = linha.reduce((acc, valor, colIndex) => {
+            acc[this.colunas[colIndex]] = valor;
             return acc;
-          }, {})
-        );
+          }, {});
+
+          // Verificar UF_Emit
+          if (dadosLinha["UF_Emit"] && dadosLinha["UF_Emit"] !== "RJ") {
+            this.tratarUfEmitDiferenteRJ(dadosLinha); // Gatilho
+          }
+
+          this.dados.push(dadosLinha); // Atualiza os dados no estado atual
+        };
+
+        // Iterar sobre as linhas (excluindo o cabeçalho)
+        dadosJSON.slice(1).forEach((linha, index) => {
+          setTimeout(() => {
+            processarLinha(linha, index); // Processa a linha em tempo real
+          }, 0); // Executa sem bloquear o loop
+        });
+      };
+
+      leitor.onerror = (e) => {
+        console.error("Erro ao ler o arquivo:", e);
+        throw new Error("Erro ao processar o arquivo.");
       };
 
       leitor.readAsBinaryString(arquivo);
+    },
+    tratarUfEmitDiferenteRJ(linha) {
+      // Adiciona a linha à lista de linhas com UF_Emit diferente de "RJ"
+      this.linhasDiferentesRJ.push(linha);
     },
     getNotasPorEstado(estado) {
       return this.dados.filter((registro) => registro["UF_Emit"] === estado);
@@ -36,6 +67,7 @@ export const usePlanilhaStore = defineStore("planilha", {
     limparDados() {
       this.colunas = [];
       this.dados = [];
+      this.linhasDiferentesRJ = []; // Limpa as linhas com UF_Emit !== "RJ"
     },
   },
 });

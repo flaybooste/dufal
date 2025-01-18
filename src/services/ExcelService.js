@@ -39,7 +39,6 @@ function criarDadosWorksheet(dadosFiltrados) {
 
   dadosFiltrados.forEach((nf) => {
     nf.produtos.forEach((produto) => {
-      if (!validarNCM(produto.prod.NCM) && validarCFOP(produto.prod.CFOP)) {
         worksheetData.push([
           nf.emitente.CNPJ,
           nf.emitente.xNome,
@@ -57,7 +56,6 @@ function criarDadosWorksheet(dadosFiltrados) {
           produto.prod.qCom,
           produto.prod.vUnCom,
         ]);
-      }
     });
   });
 
