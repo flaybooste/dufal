@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import UnoCSS from 'unocss/vite'
+import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -17,7 +18,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'https://api.sieg.com', // URL da API
-        rewrite: (path) => path.replace( "/api", '' ),
+        rewrite: (path) => path.replace("/api", ''),
 
         changeOrigin: true, // Permite redirecionar para outro domínio
         ws: true,
@@ -29,7 +30,7 @@ export default defineConfig({
       '/api': {
         target: 'https://api.sieg.com', // URL da API
         changeOrigin: true, // Permite redirecionar para outro domínio
-        rewrite: (path) => path.replace( "/^\api", '' ),
+        rewrite: (path) => path.replace("/^\api", ''),
       },
     },
   },

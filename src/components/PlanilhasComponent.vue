@@ -2,12 +2,7 @@
   <div>
     <h1>Tabela com Filtros</h1>
     <input type="file" @change="handleFileChange" accept=".xlsm, .xlsx, .xls" />
-    <TabelaComFiltros
-      v-if="dados.length"
-      :colunas="colunas"
-      :dados="dados"
-      @filtro-aplicado="filtrosAplicados"
-    />
+    <TabelaComFiltros v-if="dados.length" :colunas="colunas" :dados="dados" @filtro-aplicado="filtrosAplicados" />
     <div v-else>
       <p>Carregue uma planilha para visualizar os dados.</p>
     </div>
@@ -25,7 +20,8 @@ export default {
     const planilhaStore = usePlanilhaStore(); // Referência à store
     const colunas = ref(planilhaStore.colunas); // Reatividade para colunas
     const dados = ref([]); // Reatividade para os dados processados em tempo real
-
+    const linhasDiff = ref(planilhaStore.linhasDiferentesRJ);
+    console.log(linhasDiff);
     // Monitora as alterações nas linhas processadas
     watch(
       () => planilhaStore.dados,
@@ -62,6 +58,7 @@ export default {
       dados,
       handleFileChange,
       filtrosAplicados,
+      linhasDiff,
     };
   },
 };

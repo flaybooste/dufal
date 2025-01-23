@@ -1,24 +1,49 @@
 <template>
-  <div>
-    <h1>Processamento de Planilha</h1>
-    <input type="file" @change="handleFileChange" accept=".xlsm, .xlsx, .xls" />
-    <ul>
-      <li v-for="(linha, index) in linhasDiferentesRJ" :key="index">
-        UF_Emit diferente de RJ: {{ linha }}
-      </li>
-    </ul>
+  <div class="container">
+    <h1 class="title is-2 mb-4">Processamento de Planilha</h1>
+
+    <!-- Componente de upload de arquivo -->
+    <div class="field mb-5">
+      <label class="label">Escolha a Planilha</label>
+      <div class="control">
+        <input 
+          type="file" 
+          @change="handleFileChange" 
+          accept=".xlsm, .xlsx, .xls" 
+          class="input"
+        />
+      </div>
+    </div>
+
+    <!-- Lista com os itens -->
+    <div class="box">
+      <ul>
+        <li v-for="(linha, index) in linhasDiferentesRJ" :key="index" class="notification">
+          NF - <b>{{ linha.Numero }}</b><br>
+
+          {{ linha.Rz_Emit }}<br>
+          {{ linha.UF_Emit }}<br>
+          {{ linha.Produto }}<br>
+
+
+          <p>DIFAL: {{ calcularDifal(linha.ICMS_Base_Calculo, linha.Valor_ICMS)[0] }}</p>
+          MEMORIA R${{ calcularDifal(linha.ICMS_Base_Calculo, linha.Valor_ICMS)[2] }} x 0.2 = R${{ calcularDifal(linha.ICMS_Base_Calculo, linha.Valor_ICMS)[3] }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { computed } from "vue";
 import { usePlanilhaStore } from "@/stores/usePlanilhasStore";
+import { calcularDifal } from "@/utils/difalUtils";
 
 export default {
   setup() {
     const planilhaStore = usePlanilhaStore();
-    const linhasDiferentesRJ = ref(planilhaStore.linhasDiferentesRJ); // Reatividade no estado
-    // Observa as mudanças no estado "linhasDiferentesRJ"
+    const linhasDiferentesRJ = computed(() => planilhaStore.linhasDiferentesRJ);
+
     const handleFileChange = async (event) => {
       const arquivo = event.target.files[0];
       if (!arquivo) return;
@@ -30,17 +55,12 @@ export default {
     return {
       linhasDiferentesRJ,
       handleFileChange,
+      calcularDifal,
     };
-  },
-  computed: {
-    ...linhasDiferentesRJ,
   },
 };
 </script>
 
 <style scoped>
-h1 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
+/* Você pode adicionar personalizações aqui, se necessário */
 </style>

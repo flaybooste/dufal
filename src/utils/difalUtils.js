@@ -1,5 +1,5 @@
-export function calcularDifal(cfop = 6102, valorProd, baseCalc = 0, impICMS = 0, aliq = 0.12) {
-    if (baseCal == 0 && baseCal == "0") {
+export function calcularDifal(valorProd = 0, baseCalc = 0, impICMS = 0, aliq = 0.12) {
+    if (baseCalc == 0 && baseCalc == "0") {
         try {
             const icmsNota = valorProd * aliq;
             const base = valorProd - icmsNota;
@@ -7,14 +7,14 @@ export function calcularDifal(cfop = 6102, valorProd, baseCalc = 0, impICMS = 0,
             const icmsInt = baseDupla * 0.2;
             const difal = icmsInt - icmsNota;
             const fcp = baseDupla * 0.02;
-            return [difal.toFixed(2), fcp.toFixed(2)];
+            return [difal.toFixed(2), fcp.toFixed(2), baseDupla.toFixed(2), icmsInt.toFixed(2)];
         } catch (e) {
             console.error(e);
             return [0, 0];
         }
     } else {
         try {
-            var base = baseCalc - icmsNota;
+            var base = baseCalc - impICMS;
             var baseDupla = base / (1 - 0.2);
             var icmsInt = baseDupla * 0.2;
             var difal = icmsInt - impICMS;
