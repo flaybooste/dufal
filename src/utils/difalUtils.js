@@ -1,5 +1,4 @@
-export function calcularDifal(valorProd = 0, baseCalc = 0, impICMS = 0, aliq = 0.12) {
-    if (baseCalc == 0 && baseCalc == "0") {
+export function calcularDifal(valorProd = 0, impICMS = 0, aliq = 0.12) {
         try {
             const icmsNota = valorProd * aliq;
             const base = valorProd - icmsNota;
@@ -12,20 +11,8 @@ export function calcularDifal(valorProd = 0, baseCalc = 0, impICMS = 0, aliq = 0
             console.error(e);
             return [0, 0];
         }
-    } else {
-        try {
-            var base = baseCalc - impICMS;
-            var baseDupla = base / (1 - 0.2);
-            var icmsInt = baseDupla * 0.2;
-            var difal = icmsInt - impICMS;
-            var fcp = baseDupla * 0.02;
-            return [difal.toFixed(2), fcp.toFixed(2)];
-        } catch (e) {
-            console.error(e);
-            return [0, 0];
-        }
     }
-}
+
 // integrar pra toda vez que tiver um produto que esteja na lista de monofasico diminuir a base de calculo
 function calcularDifalMono(cfop = 6102, valorProd, baseCalc = 0, impICMS = 0, aliq = 0.12) {
     let bc = baseCalc;

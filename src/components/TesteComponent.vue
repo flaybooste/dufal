@@ -6,30 +6,55 @@
     <div class="field mb-5">
       <label class="label">Escolha a Planilha</label>
       <div class="control">
-        <input 
-          type="file" 
-          @change="handleFileChange" 
-          accept=".xlsm, .xlsx, .xls" 
-          class="input"
-        />
+        <input type="file" @change="handleFileChange" accept=".xlsm, .xlsx, .xls" class="input" />
       </div>
     </div>
 
     <!-- Lista com os itens -->
     <div class="box">
-      <ul>
-        <li v-for="(linha, index) in linhasDiferentesRJ" :key="index" class="notification">
-          NF - <b>{{ linha.Numero }}</b><br>
+      <div class="content is-small">
+        <ol type="1">
+          <li v-for="(linha, index) in linhasDiferentesRJ" :key="index" class="notification is-link">
+            <div v-if="linha.Finalidade != 'Devolução'">
+              <h2><a>NF - {{ linha.Numero }}</a></h2><br>
+              <p>
+                <span v-if="linha.Finalidade != 'Devolução'">FINALIDADE: {{ linha.Finalidade }}</span><br>
 
-          {{ linha.Rz_Emit }}<br>
-          {{ linha.UF_Emit }}<br>
-          {{ linha.Produto }}<br>
+                EMITENTE: {{ linha.Rz_Emit }} - {{ linha.CNPJ_CPF_Emit }} -
+                <b> {{ linha.UF_Emit }}<br></b>
+                Produto: <b>{{ linha.Produto }}</b> - R$ {{ linha.Valor_Produto.toFixed(2) }} - <span class="tag is-hoverable"> NCM - {{ linha.NCM }}</span><br>
 
+                <span class="tag is-danger" v-if="linha.ICMS_Base_Calculo != 0 && linha.ICMS_Base_Calculo != '0'">
+                  <div class="column">
 
-          <p>DIFAL: {{ calcularDifal(linha.ICMS_Base_Calculo, linha.Valor_ICMS)[0] }}</p>
-          MEMORIA R${{ calcularDifal(linha.ICMS_Base_Calculo, linha.Valor_ICMS)[2] }} x 0.2 = R${{ calcularDifal(linha.ICMS_Base_Calculo, linha.Valor_ICMS)[3] }}
-        </li>
-      </ul>
+                    <a><strong>DIFAL: R$ {{ calcularDifal(linha.ICMS_Base_Calculo, impICMS = linha.Valor_ICMS)[0]
+                        }}</strong></a>
+                  </div>
+                  &nbsp;
+                  <div class="column">
+
+                    MEMORIA R${{ calcularDifal(linha.ICMS_Base_Calculo, impICMS = linha.Valor_ICMS)[2] }} x 0.2 = R${{
+                      calcularDifal(linha.ICMS_Base_Calculo, impICMS = linha.Valor_ICMS)[3] }}
+                  </div>
+                </span>
+
+                <span class="tag is-danger" v-else>
+                  <div class="column">
+                    <a><strong>
+ DIFAL: R$ {{ calcularDifal(linha.Valor_Produto, impICMS = (linha.Valor_Produto * 0.12))[0]
+                        }}</strong></a>
+                  </div>
+                  &nbsp;<div class="column">MEMORIA R${{ calcularDifal(linha.Valor_Produto, impICMS =
+                    (linha.Valor_Produto * 0.12))[2] }} x 0.2 =
+                    R${{
+                      calcularDifal(linha.Valor_Produto, impICMS = (linha.Valor_Produto * 0.12))[3] }}
+                  </div>
+                </span>
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
     </div>
   </div>
 </template>
