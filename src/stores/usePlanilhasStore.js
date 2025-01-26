@@ -10,7 +10,7 @@ export const usePlanilhaStore = defineStore("planilha", {
     totDifal: 0,
   }),
   getters: {
-    calDif(state) {
+    totalDifal(state) {
       return state.totDifal;
     },
   },
@@ -83,5 +83,6 @@ export const usePlanilhaStore = defineStore("planilha", {
     incrementDifal(valorDifal) {
       this.totDifal = this.totDifal + valorDifal;
     },
+    
   },
 });

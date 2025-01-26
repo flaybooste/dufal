@@ -1,5 +1,4 @@
 import * as XLSX from "xlsx";
-import { validarNCM, validarCFOP } from "@/utils/ValidationUtils";
 
 export function exportarParaExcel(dadosFiltrados) {
   const workbook = XLSX.utils.book_new();
