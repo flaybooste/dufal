@@ -1,15 +1,18 @@
 import { defineStore } from "pinia";
 import * as XLSX from "xlsx";
-import { diFal } from "@/utils/difalUtils";
+import { calcularDifal } from "@/utils/difalUtils";
 
 export const usePlanilhaStore = defineStore("planilha", {
   state: () => ({
     colunas: [],
     dados: [],
     linhasDiferentesRJ: [], // Lista de linhas com UF_Emit !== "RJ"
+    totDifal: 0,
   }),
-  getters:{
-
+  getters: {
+    calDif(state) {
+      return state.totDifal;
+    },
   },
   actions: {
     async carregarPlanilha(arquivo) {
@@ -36,7 +39,14 @@ export const usePlanilhaStore = defineStore("planilha", {
 
           // Verificar UF_Emit
           if (dadosLinha["UF_Emit"] && dadosLinha["UF_Emit"] !== "RJ") {
-            this.tratarUfEmitDiferenteRJ(dadosLinha); // Gatilho
+            if (dadosLinha.ICMS_Base_Calculo != 0 && dadosLinha.ICMS_Base_Calculo != '0') {
+              this.tratarUfEmitDiferenteRJ(dadosLinha); // Gatilho
+              this.totDifal += parseFloat(calcularDifal(dadosLinha.ICMS_Base_Calculo, dadosLinha.Valor_ICMS)[0]);
+            } else {
+              this.tratarUfEmitDiferenteRJ(dadosLinha); // Gatilho
+              this.totDifal += parseFloat(calcularDifal(parseFloat(dadosLinha.Valor_Produto), parseFloat(dadosLinha.Valor_Produto * 0.12)[0]));
+            }
+
           }
 
           this.dados.push(dadosLinha); // Atualiza os dados no estado atual
@@ -68,6 +78,10 @@ export const usePlanilhaStore = defineStore("planilha", {
       this.colunas = [];
       this.dados = [];
       this.linhasDiferentesRJ = []; // Limpa as linhas com UF_Emit !== "RJ"
+      this.totDifal = 0;
+    },
+    incrementDifal(valorDifal) {
+      this.totDifal = this.totDifal + valorDifal;
     },
   },
 });

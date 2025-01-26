@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/vue-fontawesome": "^3.0.8",
     "@tailwindcss/vite": "^4.0.0",
     "@zip.js/zip.js": "^2.7.54",
     "axios": "^1.7.9",
