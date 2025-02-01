@@ -1,5 +1,5 @@
 
-const FOOD = ['407', '406', '2202']
+export const FOOD = ['407', '406', '2202']
 
 export function calcularDifal(valorProd = 0, aliq = 0.12, ncm = "") {
     try {
