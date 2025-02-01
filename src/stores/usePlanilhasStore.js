@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import * as XLSX from "xlsx";
 import { calcularDifal } from "@/utils/difalUtils";
+import { checkNCM } from "@/utils/ncmUtils";
 
 export const usePlanilhaStore = defineStore("planilha", {
   state: () => ({
@@ -8,10 +9,14 @@ export const usePlanilhaStore = defineStore("planilha", {
     dados: [],
     linhasDiferentesRJ: [], // Lista de linhas com UF_Emit !== "RJ"
     totDifal: 0,
+    totFCP: 0,
   }),
   getters: {
     totalDifal(state) {
-      return state.totDifal;
+      return parseFloat(state.totDifal);
+    },
+    totalFCP(state) {
+      return parseFloat(state.totFCP);
     },
   },
   actions: {
@@ -41,12 +46,20 @@ export const usePlanilhaStore = defineStore("planilha", {
           if (dadosLinha["UF_Emit"] && dadosLinha["UF_Emit"] !== "RJ") {
             if (dadosLinha.ICMS_Base_Calculo != 0 && dadosLinha.ICMS_Base_Calculo != '0') {
               this.tratarUfEmitDiferenteRJ(dadosLinha); // Gatilho
-              this.totDifal += parseFloat(calcularDifal(dadosLinha.ICMS_Base_Calculo, dadosLinha.Valor_ICMS)[0]);
+              if (!checkNCM(String(dadosLinha.NCM))) {
+                let temp = calcularDifal(parseFloat(dadosLinha.ICMS_Base_Calculo), parseFloat(dadosLinha.ICMS_Percentual) / 100)
+                this.totDifal += parseFloat(temp[0]);
+                this.totFCP += parseFloat(temp[1])
+              }
             } else {
               this.tratarUfEmitDiferenteRJ(dadosLinha); // Gatilho
-              this.totDifal += parseFloat(calcularDifal(parseFloat(dadosLinha.Valor_Produto), parseFloat(dadosLinha.Valor_Produto * 0.12)[0]));
+              if (!checkNCM(String(dadosLinha.NCM))) {
+                let temp = calcularDifal(parseFloat(dadosLinha.Valor_Produto), parseFloat(0.12))
+                this.totDifal += parseFloat(temp[0]);
+                this.totFCP += parseFloat(temp[1])
+                
+              }
             }
-
           }
 
           this.dados.push(dadosLinha); // Atualiza os dados no estado atual
@@ -79,10 +92,14 @@ export const usePlanilhaStore = defineStore("planilha", {
       this.dados = [];
       this.linhasDiferentesRJ = []; // Limpa as linhas com UF_Emit !== "RJ"
       this.totDifal = 0;
+      this.totFCP = 0;
     },
     incrementDifal(valorDifal) {
-      this.totDifal = this.totDifal + valorDifal;
+      this.totDifal = this.totDifal + parseFloat(valorDifal);
     },
-    
+    incrementFCP(valorFcp){
+      this.totFCP = this.totFCP + parseFloat(valorFcp);
+    }
+
   },
 });

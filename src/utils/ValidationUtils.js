@@ -18,7 +18,7 @@ export function validarNCMMono(ncm) {
   export function validarNCMConv5291(ncm) {
     const ncmPermitidos = ["84198190", "85167100", "84198919", "84368000"];
     if (ncmPermitidos == ncm) {
-
+      
     }
   }
   
