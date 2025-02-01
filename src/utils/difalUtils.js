@@ -2,20 +2,22 @@
 export const FOOD = ['407', '406', '2202']
 
 export function calcularDifal(valorProd = 0, aliq = 0.12, ncm = "") {
+    let infoComp = "N";
     try {
         const icmsNota = valorProd * aliq;
         const base = valorProd - icmsNota;
         let baseDupla = base / (1 - 0.2);
         if (checkNCMMono(String(ncm))) {
-            baseDupla = calcularDifalMono(baseDupla)
+            baseDupla = calcularDifalMono(baseDupla);
+            infoComp = "S";
         }
         const icmsInt = baseDupla * 0.2;
         const difal = icmsInt - icmsNota;
         const fcp = baseDupla * 0.02;
-        return [difal.toFixed(2), fcp.toFixed(2), baseDupla.toFixed(2), icmsInt.toFixed(2)];
+        return [difal.toFixed(2), fcp.toFixed(2), baseDupla.toFixed(2), icmsInt.toFixed(2), infoComp];
     } catch (e) {
         console.error(e);
-        return [0, 0];
+        return [0, 0, 0, 0, infoComp];
     }
 }
 

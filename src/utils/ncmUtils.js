@@ -7,6 +7,7 @@ const NCM_ALIMENTOS = [
 ];
 
 export function validarNCM(ncm) {
+  console.log("ola mundo")
   return NCM_VALIDOS.includes(ncm);
 }
 

@@ -8,7 +8,12 @@
         <div class="field mb-5">
           <label class="label">Escolha a Planilha</label>
           <div class="control">
-            <input type="file" @change="handleFileChange" accept=".xlsm, .xlsx, .xls" class="input" />
+            <input
+              type="file"
+              @change="handleFileChange"
+              accept=".xlsm, .xlsx, .xls"
+              class="input"
+            />
           </div>
         </div>
       </div>
@@ -29,22 +34,26 @@
               <li v-if="linha.Finalidade != 'Devolução'" class="column">
                 <h2>
                   <a>NF - {{ linha.Numero }}</a>
-                  <p>{{ ExcelDateToJSDate(linha.Dt_Emissao).toLocaleString('pt-BR', {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  }) }}</p>
-
+                  <p>
+                    {{
+                      ExcelDateToJSDate(linha.Dt_Emissao).toLocaleString("pt-BR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    }}
+                  </p>
                 </h2>
                 <br />
                 <p>
-                  <span>FINALIDADE: {{ linha.Finalidade }}</span><br />
+                  <span>FINALIDADE: {{ linha.Finalidade }}</span
+                  ><br />
                   EMITENTE: {{ linha.Rz_Emit }} - {{ linha.CNPJ_CPF_Emit }} -
                   <b> {{ linha.UF_Emit }}<br /></b>
                   Produto: <b>{{ linha.Produto }}</b> - R$
                   {{ linha.Valor_Produto.toFixed(2) }} -
-                  <span class="tag is-hoverable"> NCM - {{ linha.NCM }}</span><br />
-
+                  <span class="tag is-hoverable"> NCM - {{ linha.NCM }}</span
+                  ><br />
                 </p>
 
                 <table>
@@ -53,14 +62,16 @@
                       <th>DIFAL</th>
                       <th>FCP (2%)</th>
                       <th>BASE DUPLA</th>
+                      <th>REDUCAO ?</th>
                     </tr>
                   </thead>
-                  <tbody v-if="
-                    linha.ICMS_Base_Calculo != 0 &&
-                    linha.ICMS_Base_Calculo != '0'">
+                  <tbody
+                    v-if="linha.ICMS_Base_Calculo != 0 && linha.ICMS_Base_Calculo != '0'"
+                  >
                     <tr>
                       <td>
-                        R$ {{
+                        R$
+                        {{
                           calcularDifal(
                             parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
                             parseFloat(linha.ICMS_Percentual) / 100,
@@ -69,7 +80,8 @@
                         }}
                       </td>
                       <td>
-                        R$ {{
+                        R$
+                        {{
                           calcularDifal(
                             parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
                             parseFloat(linha.ICMS_Percentual) / 100,
@@ -78,7 +90,8 @@
                         }}
                       </td>
                       <td>
-                        R$ {{
+                        R$
+                        {{
                           calcularDifal(
                             parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
                             parseFloat(linha.ICMS_Percentual) / 100,
@@ -86,31 +99,56 @@
                           )[2]
                         }}
                       </td>
+                      <td>
+                        {{
+                          calcularDifal(
+                            parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
+                            parseFloat(linha.ICMS_Percentual) / 100,
+                            String(linha.NCM)
+                          )[4]
+                        }}
+                      </td>
                     </tr>
                   </tbody>
                   <tbody v-else>
                     <tr>
-                      <td>R$ {{
-                        calcularDifal(
-                          parseFloat(linha.Valor_Produto),
-                          parseFloat(0.12),
-                          String(linha.NCM)
-                        )[0]
-                        }}</td>
-                      <td>R$ {{
-                        calcularDifal(
-                          parseFloat(linha.Valor_Produto),
-                          parseFloat(0.12),
-                          String(linha.NCM)
-                        )[1]
+                      <td>
+                        R$
+                        {{
+                          calcularDifal(
+                            parseFloat(linha.Valor_Produto),
+                            parseFloat(0.12),
+                            String(linha.NCM)
+                          )[0]
                         }}
                       </td>
-                      <td>R$ {{
-                        calcularDifal(
-                          parseFloat(linha.Valor_Produto),
-                          parseFloat(0.12),
-                          String(linha.NCM)
-                        )[2]
+                      <td>
+                        R$
+                        {{
+                          calcularDifal(
+                            parseFloat(linha.Valor_Produto),
+                            parseFloat(0.12),
+                            String(linha.NCM)
+                          )[1]
+                        }}
+                      </td>
+                      <td>
+                        R$
+                        {{
+                          calcularDifal(
+                            parseFloat(linha.Valor_Produto),
+                            parseFloat(0.12),
+                            String(linha.NCM)
+                          )[2]
+                        }}
+                      </td>
+                      <td>
+                        {{
+                          calcularDifal(
+                            parseFloat(linha.Valor_Produto),
+                            parseFloat(0.12),
+                            String(linha.NCM)
+                          )[4]
                         }}
                       </td>
                     </tr>
@@ -118,9 +156,7 @@
                 </table>
               </li>
             </div>
-            <div v-else>
-
-            </div>
+            <div v-else></div>
           </div>
         </ul>
       </div>
@@ -146,7 +182,7 @@ export default {
 
     watch(totDifal, (dif) => {
       icmsDifal.value = dif;
-    })
+    });
 
     const handleFileChange = async (event) => {
       const arquivo = event.target.files[0];
@@ -161,10 +197,9 @@ export default {
     };
     let incrementFCP = (valorFcp) => {
       totFCP = totFCP + parseFloat(valorFcp);
-    }
+    };
     const icmsDifal = ref([]);
     const fcpDifal = ref([]);
-
 
     return {
       planilhaStore,
@@ -182,8 +217,7 @@ export default {
     };
   },
 
-  methods: {
-  },
+  methods: {},
 };
 </script>
 
