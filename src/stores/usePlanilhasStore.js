@@ -57,7 +57,7 @@ export const usePlanilhaStore = defineStore("planilha", {
                 let temp = calcularDifal(parseFloat(dadosLinha.Valor_Produto), parseFloat(0.12))
                 this.totDifal += parseFloat(temp[0]);
                 this.totFCP += parseFloat(temp[1])
-                
+
               }
             }
           }
@@ -97,7 +97,7 @@ export const usePlanilhaStore = defineStore("planilha", {
     incrementDifal(valorDifal) {
       this.totDifal = this.totDifal + parseFloat(valorDifal);
     },
-    incrementFCP(valorFcp){
+    incrementFCP(valorFcp) {
       this.totFCP = this.totFCP + parseFloat(valorFcp);
     }
 

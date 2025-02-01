@@ -22,7 +22,7 @@
     </div>
     <!-- Lista com os itens -->
     <div class="box">
-      <div class="content is-small">
+      <div class="content is-normal">
         <ul>
           <div v-for="(linha, index) in linhasDiferentesRJ" :key="index" class="columns">
             <div v-if="!checkNCM(String(linha.NCM))">
@@ -45,105 +45,86 @@
                   {{ linha.Valor_Produto.toFixed(2) }} -
                   <span class="tag is-hoverable"> NCM - {{ linha.NCM }}</span><br />
 
-                  <span class="tag is-danger" v-if="
+                </p>
+
+                <table>
+                  <thead>
+                    <tr>
+                      <th>DIFAL</th>
+                      <th>FCP (2%)</th>
+                      <th>BASE DUPLA</th>
+                    </tr>
+                  </thead>
+                  <tbody v-if="
                     linha.ICMS_Base_Calculo != 0 &&
-                    linha.ICMS_Base_Calculo != '0'
-                  ">
-                    <div class="column">
-                      <p><a><strong>DIFAL: R$
-                            <div>
-                              {{
-                                calcularDifal(
-                                  parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
-                                  parseFloat(linha.ICMS_Percentual) / 100,
-                                  String(linha.NCM)
-                                )[0]
-                              }}
-                            </div>
-                          </strong></a>
-                        &nbsp;
-                        FCP : R$
-                      <div>
-                        {{
+                    linha.ICMS_Base_Calculo != '0'">
+                    <tr>
+                      <td>
+                        R$ {{
+                          calcularDifal(
+                            parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
+                            parseFloat(linha.ICMS_Percentual) / 100,
+                            String(linha.NCM)
+                          )[0]
+                        }}
+                      </td>
+                      <td>
+                        R$ {{
                           calcularDifal(
                             parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
                             parseFloat(linha.ICMS_Percentual) / 100,
                             String(linha.NCM)
                           )[1]
                         }}
-                      </div>
-                </p>
+                      </td>
+                      <td>
+                        R$ {{
+                          calcularDifal(
+                            parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
+                            parseFloat(linha.ICMS_Percentual) / 100,
+                            String(linha.NCM)
+                          )[2]
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tbody v-else>
+                    <tr>
+                      <td>R$ {{
+                        calcularDifal(
+                          parseFloat(linha.Valor_Produto),
+                          parseFloat(0.12),
+                          String(linha.NCM)
+                        )[0]
+                        }}</td>
+                      <td>R$ {{
+                        calcularDifal(
+                          parseFloat(linha.Valor_Produto),
+                          parseFloat(0.12),
+                          String(linha.NCM)
+                        )[1]
+                        }}
+                      </td>
+                      <td>R$ {{
+                        calcularDifal(
+                          parseFloat(linha.Valor_Produto),
+                          parseFloat(0.12),
+                          String(linha.NCM)
+                        )[2]
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </li>
+            </div>
+            <div v-else>
 
             </div>
-            &nbsp;
-            <div class="column">
-              MEMORIA R${{
-                calcularDifal(
-                  parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
-                  parseFloat(linha.ICMS_Percentual) / 100,
-                  String(linha.NCM)
-                )[2]
-              }}
-              x 20% (ALIQUOTA RJ) = R${{
-                calcularDifal(
-                  parseFloat(linha.ICMS_Base_Calculo.toFixed(2)),
-                  parseFloat(linha.ICMS_Percentual) / 100,
-                  String(linha.NCM)
-                )[3]
-              }}
-            </div>
-            <br>
-            </span>
-
-            <span class="tag is-danger" v-else>
-              <div class="column">
-                <a><strong>
-                    DIFAL: R$
-                    {{
-                      calcularDifal(
-                        parseFloat(linha.Valor_Produto),
-                        parseFloat(0.12),
-                        String(linha.NCM)
-                      )[0]
-                    }}</strong></a>
-                FCP: R$
-                {{
-                  calcularDifal(
-                    parseFloat(linha.Valor_Produto),
-                    parseFloat(0.12),
-                    String(linha.NCM)
-                  )[1]
-                }}
-              </div>
-              &nbsp;
-              <div class="column">
-                MEMORIA R${{
-                  calcularDifal(
-                    parseFloat(linha.Valor_Produto),
-                    parseFloat(0.12),
-                    String(linha.NCM)
-                  )[2]
-                }}
-                x 20% = R${{
-                  calcularDifal(
-                    parseFloat(linha.Valor_Produto),
-                    parseFloat(0.12),
-                    String(linha.NCM)
-                  )[3]
-                }}
-              </div>
-              <br>
-            </span>
-            </p>
-            </li>
           </div>
-          <div v-else>
-
-          </div>
+        </ul>
       </div>
-      </ul>
     </div>
-  </div>
   </div>
 </template>
 
