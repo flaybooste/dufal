@@ -20,7 +20,11 @@
       <div class="column">
         <div class="field mb-5">
           <label class="label">
-            Total Difal R$ {{ totalDifal.toFixed(2) }} FCP R$ {{ totalFCP.toFixed(2) }}
+            Total Difal R$ {{ totalDifal.toFixed(2) }} FCP R$
+            {{ totalFCP.toFixed(2) }}
+          </label>
+          <label class="label">
+            <button class="button is-primary is-dark" @click="planilhaStore.exportExcelDifal">Exportar XLSX</button>
           </label>
         </div>
       </div>
@@ -29,18 +33,25 @@
     <div class="box">
       <div class="content is-normal">
         <ul>
-          <div v-for="(linha, index) in linhasDiferentesRJ" :key="index" class="columns">
+          <div
+            v-for="(linha, index) in linhasDiferentesRJ"
+            :key="index"
+            class="columns"
+          >
             <div v-if="!checkNCM(String(linha.NCM))">
               <li v-if="linha.Finalidade != 'Devolução'" class="column">
                 <h2>
                   <a>NF - {{ linha.Numero }}</a>
                   <p>
                     {{
-                      ExcelDateToJSDate(linha.Dt_Emissao).toLocaleString("pt-BR", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
+                      ExcelDateToJSDate(linha.Dt_Emissao).toLocaleString(
+                        "pt-BR",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )
                     }}
                   </p>
                 </h2>
@@ -55,7 +66,6 @@
                   <span class="tag is-hoverable"> NCM - {{ linha.NCM }}</span
                   ><br />
                 </p>
-
                 <table>
                   <thead>
                     <tr>
@@ -66,7 +76,10 @@
                     </tr>
                   </thead>
                   <tbody
-                    v-if="linha.ICMS_Base_Calculo != 0 && linha.ICMS_Base_Calculo != '0'"
+                    v-if="
+                      linha.ICMS_Base_Calculo != 0 &&
+                      linha.ICMS_Base_Calculo != '0'
+                    "
                   >
                     <tr>
                       <td>
@@ -176,7 +189,6 @@ export default {
     const linhasDiferentesRJ = computed(() => planilhaStore.linhasDiferentesRJ);
     let totDifal = computed(() => planilhaStore.totDifal);
     let totFCP = computed(() => planilhaStore.totFCP);
-
     const totalDifal = computed(() => planilhaStore.totalDifal);
     const totalFCP = computed(() => planilhaStore.totalFCP);
 

@@ -2,12 +2,14 @@ import { defineStore } from "pinia";
 import * as XLSX from "xlsx";
 import { calcularDifal } from "@/utils/difalUtils";
 import { checkNCM } from "@/utils/ncmUtils";
+import { exportarParaExcel } from "@/services/ExcelService";
 
 export const usePlanilhaStore = defineStore("planilha", {
   state: () => ({
     colunas: [],
     dados: [],
     linhasDiferentesRJ: [], // Lista de linhas com UF_Emit !== "RJ"
+    prodDifal: [],
     totDifal: 0,
     totFCP: 0,
   }),
@@ -44,20 +46,46 @@ export const usePlanilhaStore = defineStore("planilha", {
 
           // Verificar UF_Emit
           if (dadosLinha["UF_Emit"] && dadosLinha["UF_Emit"] !== "RJ") {
-            if (dadosLinha.ICMS_Base_Calculo != 0 && dadosLinha.ICMS_Base_Calculo != '0') {
+            if (
+              dadosLinha.ICMS_Base_Calculo != 0 &&
+              dadosLinha.ICMS_Base_Calculo != "0"
+            ) {
               this.tratarUfEmitDiferenteRJ(dadosLinha); // Gatilho
               if (!checkNCM(String(dadosLinha.NCM))) {
-                let temp = calcularDifal(parseFloat(dadosLinha.ICMS_Base_Calculo), parseFloat(dadosLinha.ICMS_Percentual) / 100)
+                let temp = calcularDifal(
+                  parseFloat(dadosLinha.ICMS_Base_Calculo),
+                  parseFloat(dadosLinha.ICMS_Percentual) / 100
+                );
                 this.totDifal += parseFloat(temp[0]);
-                this.totFCP += parseFloat(temp[1])
+                this.totFCP += parseFloat(temp[1]);
+                let objeto = {
+                  nome: dadosLinha.Produto,
+                  ncm: dadosLinha.NCM,
+                  valor: dadosLinha.Valor_Produto,
+                  base_dupla: temp[2],
+                  difal: temp[0],
+                  fcp: temp[1],
+                };
+                this.prodDifal.push(objeto);
               }
             } else {
               this.tratarUfEmitDiferenteRJ(dadosLinha); // Gatilho
               if (!checkNCM(String(dadosLinha.NCM))) {
-                let temp = calcularDifal(parseFloat(dadosLinha.Valor_Produto), parseFloat(0.12))
+                let temp = calcularDifal(
+                  parseFloat(dadosLinha.Valor_Produto),
+                  parseFloat(0.12)
+                );
                 this.totDifal += parseFloat(temp[0]);
-                this.totFCP += parseFloat(temp[1])
-
+                this.totFCP += parseFloat(temp[1]);
+                let objeto = {
+                  nome: dadosLinha.Produto,
+                  ncm: dadosLinha.NCM,
+                  valor: dadosLinha.Valor_Produto,
+                  base_dupla: temp[2],
+                  difal: temp[0],
+                  fcp: temp[1],
+                };
+                this.prodDifal.push(objeto);
               }
             }
           }
@@ -91,6 +119,7 @@ export const usePlanilhaStore = defineStore("planilha", {
       this.colunas = [];
       this.dados = [];
       this.linhasDiferentesRJ = []; // Limpa as linhas com UF_Emit !== "RJ"
+      this.prodDifal = [];
       this.totDifal = 0;
       this.totFCP = 0;
     },
@@ -99,7 +128,9 @@ export const usePlanilhaStore = defineStore("planilha", {
     },
     incrementFCP(valorFcp) {
       this.totFCP = this.totFCP + parseFloat(valorFcp);
-    }
-
+    },
+    exportExcelDifal() {
+      exportarParaExcel(this.prodDifal)
+    },
   },
 });

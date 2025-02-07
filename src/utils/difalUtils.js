@@ -14,6 +14,7 @@ export function calcularDifal(valorProd = 0, aliq = 0.12, ncm = "") {
         const icmsInt = baseDupla * 0.2;
         const difal = icmsInt - icmsNota;
         const fcp = baseDupla * 0.02;
+        
         return [difal.toFixed(2), fcp.toFixed(2), baseDupla.toFixed(2), icmsInt.toFixed(2), infoComp];
     } catch (e) {
         console.error(e);
