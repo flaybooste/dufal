@@ -1,4 +1,4 @@
-export const FOOD = ["407", "406", "2202"];
+import { NCM_MONO, NCM_ALIMENTOS, NCM_CONV } from "./ncmUtils";
 
 export function calcularDifal(valorProd = 0, aliq = 0.12, ncm = "") {
   let infoComp = "N";
@@ -31,19 +31,9 @@ export function calcularDifal(valorProd = 0, aliq = 0.12, ncm = "") {
   }
 }
 
-const NCM_MONO = [
-  "3001",
-  "3303",
-  "3304",
-  "3305",
-  "3307",
-  "34011190",
-  "34012010",
-];
-
 export function checkNCM(ncm) {
   let ver = false;
-  FOOD.forEach((item) => {
+  NCM_ALIMENTOS.forEach((item) => {
     if (ncm.startsWith(item)) {
       ver = true;
     }
@@ -69,30 +59,10 @@ function calcularDifalMono(baseCalc) {
   return base_red;
 }
 
-// toda vez que tiver um equipamento do conv 52/91 diminui a base de calculo
-let ncm_conv = [
-  "84137010",
-  "84137080",
-  "84137090",
-  "84148012",
-  "84148013",
-  "84148019",
-  "84148031",
-  "84148033",
-  "84148038",
-  "84148039",
-  "84161000",
-  "84162010",
-  "84162090",
-  "84163000",
-  "84169000",
-  "84323110"
-];
-
 
 function checkNCMConv(ncm) {
   let ver = false;
-  ncm_conv.forEach((item) => {
+  NCM_CONV.forEach((item) => {
     if (ncm.startsWith(item)) {
       ver = true;
     }
@@ -124,3 +94,9 @@ export const diFal = (valor_prod = 10, aliq = 0.12, icms_pg = 0) => {
     return difal;
   }
 };
+
+
+
+export function checkNCM(ncm) {
+  ncm.startsWith("")
+}

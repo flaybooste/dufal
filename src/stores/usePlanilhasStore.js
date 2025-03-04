@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import * as XLSX from "xlsx";
-import { calcularDifal } from "@/utils/difalUtils";
-import { checkNCM } from "@/utils/ncmUtils";
+import { calcularDifal, checkNCM } from "@/utils/difalUtils";
 import { exportarParaExcel } from "@/services/ExcelService";
 import axios from "axios";
 
@@ -142,7 +141,7 @@ export const usePlanilhaStore = defineStore("planilha", {
     async enviarDadosParaServidor() {
       try {
         const response = await axios.post(
-          "http://vps56190.publiccloud.com.br/api/v1/ins_nf",
+          "http://dufal.tech/api/v1/ins_nf",
           {
             linhasDiferentesRJ: this.linhasDiferentesRJ,
           }
