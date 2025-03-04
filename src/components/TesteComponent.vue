@@ -24,7 +24,12 @@
             {{ totalFCP.toFixed(2) }}
           </label>
           <label class="label">
-            <button class="button is-primary is-dark" @click="planilhaStore.exportExcelDifal">Exportar XLSX</button>
+            <button
+              class="button is-primary is-dark"
+              @click="planilhaStore.exportExcelDifal"
+            >
+              Exportar XLSX
+            </button>
           </label>
         </div>
       </div>
@@ -187,8 +192,8 @@ export default {
   setup() {
     const planilhaStore = usePlanilhaStore();
     const linhasDiferentesRJ = computed(() => planilhaStore.linhasDiferentesRJ);
-    let totDifal = computed(() => planilhaStore.totDifal);
-    let totFCP = computed(() => planilhaStore.totFCP);
+    const totDifal = ref(planilhaStore.totDifal);
+    const totFCP = ref(planilhaStore.totFCP);
     const totalDifal = computed(() => planilhaStore.totalDifal);
     const totalFCP = computed(() => planilhaStore.totalFCP);
 
@@ -204,11 +209,11 @@ export default {
       await planilhaStore.carregarPlanilha(arquivo); // Processa o novo arquivo
     };
 
-    let incrementDifal = (valor) => {
-      totDifal = totDifal + parseFloat(valor);
+    const incrementDifal = (valor) => {
+      totDifal.value += parseFloat(valor);
     };
-    let incrementFCP = (valorFcp) => {
-      totFCP = totFCP + parseFloat(valorFcp);
+    const incrementFCP = (valorFcp) => {
+      totFCP.value += parseFloat(valorFcp);
     };
     const icmsDifal = ref([]);
     const fcpDifal = ref([]);

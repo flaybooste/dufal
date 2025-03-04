@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { calcularDifal } from "@/utils/difalUtils";
 import { checkNCM } from "@/utils/ncmUtils";
 import { exportarParaExcel } from "@/services/ExcelService";
+import axios from "axios";
 
 export const usePlanilhaStore = defineStore("planilha", {
   state: () => ({
@@ -28,21 +29,22 @@ export const usePlanilhaStore = defineStore("planilha", {
       const leitor = new FileReader();
 
       leitor.onload = (e) => {
-        const dadosBinarios = e.target.result;
-        const workbook = XLSX.read(dadosBinarios, { type: "binary" });
+        const arrayBuffer = e.target.result;
+        const dadosBinarios = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(dadosBinarios, { type: "array", raw: true });
         const primeiraPlanilha = workbook.SheetNames[0];
         const planilha = workbook.Sheets[primeiraPlanilha];
         const dadosJSON = XLSX.utils.sheet_to_json(planilha, { header: 1 });
-
         // A primeira linha contém os nomes das colunas
         this.colunas = dadosJSON[0];
 
-        // Processar as linhas em tempo real
         const processarLinha = async (linha, index) => {
           const dadosLinha = linha.reduce((acc, valor, colIndex) => {
             acc[this.colunas[colIndex]] = valor;
             return acc;
           }, {});
+
+          // Validate columns
 
           // Verificar UF_Emit
           if (dadosLinha["UF_Emit"] && dadosLinha["UF_Emit"] !== "RJ") {
@@ -65,6 +67,10 @@ export const usePlanilhaStore = defineStore("planilha", {
                   base_dupla: temp[2],
                   difal: temp[0],
                   fcp: temp[1],
+                  nf: dadosLinha.Numero,
+                  chave: dadosLinha.Chave,
+                  PDF:
+                    "https://cofre.sieg.com/gerardanfe?nfe=" + dadosLinha.Chave,
                 };
                 this.prodDifal.push(objeto);
               }
@@ -84,6 +90,10 @@ export const usePlanilhaStore = defineStore("planilha", {
                   base_dupla: temp[2],
                   difal: temp[0],
                   fcp: temp[1],
+                  nf: dadosLinha.Numero,
+                  chave: dadosLinha.Chave,
+                  PDF:
+                    "https://cofre.sieg.com/gerardanfe?nfe=" + dadosLinha.Chave,
                 };
                 this.prodDifal.push(objeto);
               }
@@ -94,10 +104,8 @@ export const usePlanilhaStore = defineStore("planilha", {
         };
 
         // Iterar sobre as linhas (excluindo o cabeçalho)
-        dadosJSON.slice(1).forEach((linha, index) => {
-          setTimeout(() => {
-            processarLinha(linha, index); // Processa a linha em tempo real
-          }, 0); // Executa sem bloquear o loop
+        dadosJSON.slice(1).forEach(async (linha, index) => {
+          await processarLinha(linha, index); // Processa a linha em tempo real
         });
       };
 
@@ -105,8 +113,7 @@ export const usePlanilhaStore = defineStore("planilha", {
         console.error("Erro ao ler o arquivo:", e);
         throw new Error("Erro ao processar o arquivo.");
       };
-
-      leitor.readAsBinaryString(arquivo);
+      leitor.readAsArrayBuffer(arquivo);
     },
     tratarUfEmitDiferenteRJ(linha) {
       // Adiciona a linha à lista de linhas com UF_Emit diferente de "RJ"
@@ -130,7 +137,20 @@ export const usePlanilhaStore = defineStore("planilha", {
       this.totFCP = this.totFCP + parseFloat(valorFcp);
     },
     exportExcelDifal() {
-      exportarParaExcel(this.prodDifal)
+      exportarParaExcel(this.prodDifal);
+    },
+    async enviarDadosParaServidor() {
+      try {
+        const response = await axios.post(
+          "http://vps56190.publiccloud.com.br/api/v1/ins_nf",
+          {
+            linhasDiferentesRJ: this.linhasDiferentesRJ,
+          }
+        );
+        console.log("Dados enviados com sucesso:", response.data);
+      } catch (error) {
+        console.error("Erro ao enviar os dados:", error);
+      }
     },
   },
 });
