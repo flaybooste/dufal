@@ -18,6 +18,8 @@ export const NCM_ALIMENTOS = [
   "20081900",
   "21039091",
   "04061010",
+  "4051000",
+  "0405",
 ];
 
 export const NCM_MONO = [

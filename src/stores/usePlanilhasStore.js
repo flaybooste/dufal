@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import * as XLSX from "xlsx";
 import { calcularDifal, checkNCM } from "@/utils/difalUtils";
+import { ExcelDateToJSDate as DateExcel } from "@/utils/dateUtils";
 import { exportarParaExcel } from "@/services/ExcelService";
 import axios from "axios";
 
@@ -60,6 +61,7 @@ export const usePlanilhaStore = defineStore("planilha", {
                 this.totDifal += parseFloat(temp[0]);
                 this.totFCP += parseFloat(temp[1]);
                 let objeto = {
+                  data: DateExcel(dadosLinha.Dt_Emissao).toLocaleString(),
                   nome: dadosLinha.Produto,
                   ncm: dadosLinha.NCM,
                   valor: dadosLinha.Valor_Produto,
@@ -83,6 +85,7 @@ export const usePlanilhaStore = defineStore("planilha", {
                 this.totDifal += parseFloat(temp[0]);
                 this.totFCP += parseFloat(temp[1]);
                 let objeto = {
+                  data: DateExcel(dadosLinha.Dt_Emissao).toLocaleString(),
                   nome: dadosLinha.Produto,
                   ncm: dadosLinha.NCM,
                   valor: dadosLinha.Valor_Produto,
@@ -140,12 +143,9 @@ export const usePlanilhaStore = defineStore("planilha", {
     },
     async enviarDadosParaServidor() {
       try {
-        const response = await axios.post(
-          "http://dufal.tech/api/v1/ins_nf",
-          {
-            linhasDiferentesRJ: this.linhasDiferentesRJ,
-          }
-        );
+        const response = await axios.post("http://dufal.tech/api/v1/ins_nf", {
+          // linhasDiferentesRJ: this.linhasDiferentesRJ,
+        });
         console.log("Dados enviados com sucesso:", response.data);
       } catch (error) {
         console.error("Erro ao enviar os dados:", error);

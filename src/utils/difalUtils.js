@@ -59,7 +59,6 @@ function calcularDifalMono(baseCalc) {
   return base_red;
 }
 
-
 function checkNCMConv(ncm) {
   let ver = false;
   NCM_CONV.forEach((item) => {
@@ -94,9 +93,3 @@ export const diFal = (valor_prod = 10, aliq = 0.12, icms_pg = 0) => {
     return difal;
   }
 };
-
-
-
-export function checkNCM(ncm) {
-  ncm.startsWith("")
-}

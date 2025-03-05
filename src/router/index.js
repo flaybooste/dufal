@@ -1,15 +1,15 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import XmlView from '@/views/XmlView.vue'
-import HomeView from '@/views/HomeView.vue'
-import PlanilhasComponent from '@/components/PlanilhasComponent.vue'
-import TesteComponent from '@/components/TesteComponent.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import XmlView from "@/views/XmlView.vue";
+import HomeView from "@/views/HomeView.vue";
+import PlanilhasComponent from "@/components/PlanilhasComponent.vue";
+import TesteComponent from "@/components/TesteComponent.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
+      path: "/",
+      name: "home",
       component: HomeView,
     },
     {
@@ -20,9 +20,9 @@ const router = createRouter({
     {
       path: "/planilhas",
       name: "planilhas",
-      component: TesteComponent
-    }
+      component: TesteComponent,
+    },
   ],
-})
+});
 
-export default router
+export default router;
